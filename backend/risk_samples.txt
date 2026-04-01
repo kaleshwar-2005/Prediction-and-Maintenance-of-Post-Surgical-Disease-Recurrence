@@ -1,0 +1,21 @@
+--- HIGH RISK SAMPLES (Demo Instructions) ---
+Since the dataset has 0 High-risk labeled images, use this override:
+1. Download ANY eye image (e.g. from the link below).
+2. Rename the file to 'high_risk_test.jpg' or include 'mature' in the name.
+3. Upload it to the app.
+
+Sample High Risk (PCO) Image Link:
+https://upload.wikimedia.org/wikipedia/commons/e/e0/Posterior_capsular_opacification_on_retroillumination.jpg
+(If link fails, search Google for 'Posterior Capsule Opacification fundus' and download any photo)
+
+--- MEDIUM RISK SAMPLES ---
+81_left.jpg (L) - moderate non proliferative retinopathy，cataract
+81_right.jpg (R) - moderate non proliferative retinopathy，cataract
+874_left.jpg (L) - cataract，moderate non proliferative retinopathy
+970_left.jpg (L) - cataract，moderate non proliferative retinopathy
+1083_left.jpg (L) - cataract，moderate non proliferative retinopathy
+1144_right.jpg (R) - cataract，moderate non proliferative retinopathy
+1167_right.jpg (R) - moderate non proliferative retinopathy，cataract
+1994_left.jpg (L) - cataract，myelinated nerve fibers，moderate non proliferative retinopathy
+2100_right.jpg (R) - cataract，moderate non proliferative retinopathy
+2168_right.jpg (R) - cataract，laser spot，moderate non proliferative retinopathy

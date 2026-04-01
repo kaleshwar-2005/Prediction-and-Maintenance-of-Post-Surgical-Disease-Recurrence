@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0284c7;
+  --color-secondary: #0ea5e9;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Base Styles handled by MUI CssBaseline */
+
+/* Custom Animations */
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-scan {
+  animation: scan 2s linear infinite;
+}
+
+.glass-card {
+  @apply backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+:root[data-theme='light'] .glass-card {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.05);
+}
