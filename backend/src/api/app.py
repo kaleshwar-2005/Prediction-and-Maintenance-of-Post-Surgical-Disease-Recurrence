@@ -9,7 +9,7 @@ from src.api.inference import Predictor
 from src.api.schemas import RiskResponse, RecommendationRequest
 from src.api.rag_module import init_rag_system, get_rag_system
 
-# Configure logging to file
+# Configure logging
 logging.basicConfig(
     filename='backend_api_debug.log',
     level=logging.DEBUG,
@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Cataract Recurrence Risk Prediction API")
 
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,7 +33,7 @@ MODEL_PATH = "model_checkpoints/best_model.pth"
 predictor = None
 
 
-# Optional: sanitize filename if needed
+# Sanitize filename (avoid log injection / unsafe chars)
 def sanitize_filename(filename: str) -> str:
     if not filename:
         return "unknown"
@@ -44,7 +45,7 @@ def load_predictor():
     global predictor
     logger.info("Starting up API...")
 
-    # Initialize Persistent Vector Database & RAG
+    # Initialize RAG system
     init_rag_system()
 
     if os.path.exists(MODEL_PATH):
@@ -63,7 +64,23 @@ def home():
     return {"message": "API is Running"}
 
 
-@app.post("/predict", response_model=RiskResponse)
+@app.post(
+    "/predict",
+    response_model=RiskResponse,
+    responses={
+        200: {"description": "Prediction successful"},
+        400: {"description": "Invalid file input"},
+        503: {"description": "Model not available"},
+        500: {
+            "description": "Internal server error",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Internal server error"}
+                }
+            },
+        },
+    },
+)
 async def predict_risk(file: UploadFile = File(...)):
     if predictor is None:
         raise HTTPException(status_code=503, detail="Model not loaded.")
@@ -74,7 +91,7 @@ async def predict_risk(file: UploadFile = File(...)):
     try:
         contents = await file.read()
 
-        # Safe logging (no user-controlled raw input)
+        # Safe logging (NO user-controlled raw input)
         logger.info(
             "Prediction request received",
             extra={
@@ -83,13 +100,12 @@ async def predict_risk(file: UploadFile = File(...)):
             }
         )
 
-        # Optional sanitized filename (if needed internally)
         safe_filename = sanitize_filename(file.filename)
 
         image_stream = io.BytesIO(contents)
         result = predictor.predict(image_stream, filename=safe_filename)
 
-        # Fetch RAG-augmented AI advice
+        # RAG advice
         logger.info("Fetching RAG-augmented advice...")
         rag = get_rag_system()
 
@@ -117,7 +133,21 @@ async def predict_risk(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@app.post("/generate-recommendation")
+@app.post(
+    "/generate-recommendation",
+    responses={
+        200: {"description": "Recommendation generated"},
+        503: {"description": "RAG system unavailable"},
+        500: {
+            "description": "Generation failure",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Generation failed"}
+                }
+            },
+        },
+    },
+)
 async def generate_rag_recommendation(request: RecommendationRequest):
     """Standalone RAG generation endpoint."""
     rag = get_rag_system()
@@ -126,9 +156,7 @@ async def generate_rag_recommendation(request: RecommendationRequest):
         raise HTTPException(status_code=503, detail="RAG system is not loaded.")
 
     try:
-        # Safe logging (risk comes from user, so avoid direct injection)
         logger.info("Direct RAG request received")
-
         return rag.generate_recommendation(request.risk)
 
     except Exception as e:
