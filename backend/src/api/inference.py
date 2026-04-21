@@ -29,7 +29,7 @@ class Predictor:
             2: "High"
         }
 
-    def predict(self, image_file, filename=None):
+    def predict(self, image_file):
         # Avoid logging raw user input
         
         print("DEBUG: Running inference on uploaded image")
