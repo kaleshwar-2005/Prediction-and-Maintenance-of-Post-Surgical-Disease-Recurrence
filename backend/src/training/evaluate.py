@@ -17,7 +17,7 @@ def evaluate(args):
     csv_path = os.path.join(args.data_dir, "data", "full_df.csv")
     
     dataset = ODIR5KDataset(data_root, csv_path, transform=get_transforms('val'), mode='val')
-    loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False)
+    loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False,num_workers=4)
     
     model = CataractRiskModel(num_classes=3)
     model.load_state_dict(torch.load(args.model_path, map_location=device))
