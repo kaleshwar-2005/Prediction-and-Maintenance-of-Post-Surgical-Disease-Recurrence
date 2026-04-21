@@ -31,7 +31,7 @@ class Predictor:
 
     def predict(self, image_file, filename=None):
         # Avoid logging raw user input
-        safe_name = filename.lower() if filename else "unknown"
+        
         print("DEBUG: Running inference on uploaded image")
 
         image = Image.open(image_file).convert('RGB')
